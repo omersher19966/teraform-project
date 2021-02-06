@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-variable "host"{} 
+variable "host" {}
 variable "username" {}
 variable "password" {}
 
@@ -23,7 +23,6 @@ provider "nsxt" {
 }
 
 variable "T1_Names" {
-  type = list(string)
   default = ["Test1", "Test2"]
 }
 data "nsxt_policy_transport_zone" "OverlayTZ" {
@@ -47,9 +46,9 @@ data "nsxt_policy_group" "group_tag" {
 
 
 resource "nsxt_policy_tier1_gateway" "tier1_gw" {
-  count = 2
+  for_each = toset(var.T1_Names)
   description               = "Tier-1 provisioned by Terraform"
-  display_name              = "T1-Terraform-Test-${count.index+1}"
+  display_name              = each.key
   failover_mode             = "PREEMPTIVE"
   default_rule_logging      = "false"
   enable_firewall           = "true"
@@ -59,6 +58,18 @@ resource "nsxt_policy_tier1_gateway" "tier1_gw" {
   tier0_path                = data.nsxt_policy_tier0_gateway.T0.path
 }
 
+
+
+resource "nsxt_policy_segment" "segment1" {
+  display_name        = "Terraform Segment"
+  description         = "Terraform provisioned Segment"
+  connectivity_path   = nsxt_policy_tier1_gateway.tier1_gw["Test2"].path
+  transport_zone_path = data.nsxt_policy_transport_zone.OverlayTZ.path
+
+  subnet {
+    cidr        = "12.12.2.1/24"
+  }
+}
 
 
 resource "nsxt_policy_group" "group1" {
