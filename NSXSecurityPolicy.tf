@@ -7,10 +7,14 @@ terraform {
   }
 }
 
+variable "host"{} 
+variable "username" {}
+variable "password" {}
+
 provider "nsxt" {
-  host                  = "10.100.100.142"
-  username              = "admin"
-  password              = "Secpwd123123@"
+  host                  = var.host
+  username              = var.username
+  password              = var.password
   allow_unverified_ssl  = true
   max_retries           = 10
   retry_min_delay       = 500
@@ -43,7 +47,7 @@ data "nsxt_policy_group" "group_tag" {
 
 
 resource "nsxt_policy_tier1_gateway" "tier1_gw" {
-  count = 5
+  count = 2
   description               = "Tier-1 provisioned by Terraform"
   display_name              = "T1-Terraform-Test-${count.index+1}"
   failover_mode             = "PREEMPTIVE"
@@ -63,7 +67,7 @@ resource "nsxt_policy_group" "group1" {
 
   criteria {
     ipaddress_expression {
-      ip_addresses = ["211.1.1.1", "212.1.1.1", "192.168.1.1-192.168.1.100"]
+      ip_addresses = ["211.1.2.1", "212.1.1.1", "192.168.1.1-192.168.1.100"]
     }
   }
   
