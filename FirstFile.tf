@@ -43,7 +43,7 @@ data "nsxt_policy_group" "group_tag" {
 
 
 resource "nsxt_policy_tier1_gateway" "tier1_gw" {
-  count = 4
+  count = 5
   description               = "Tier-1 provisioned by Terraform"
   display_name              = "T1-Terraform-Test-${count.index+1}"
   failover_mode             = "PREEMPTIVE"
