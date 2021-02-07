@@ -72,6 +72,41 @@ resource "nsxt_policy_segment" "segment1" {
 }
 
 
+// security polices section 
+
+data "nsxt_policy_service" "service" {
+  display_name = "Service_G_ALL"
+}
+
+variable "test" {
+  
+}
+
+variable "list-test" {
+  type = object()
+}
+resource "nsxt_policy_security_policy" "policy1" {
+  display_name = "Terraform-Policy"
+  description  = "Terraform provisioned Security Policy"
+  category     = "Application"
+  locked       = false
+  stateful     = true
+  tcp_strict   = false
+
+
+  rule {
+    for name in var.list-test: display_name = name.name[1]
+    source_groups      = [data.nsxt_policy_group.group_all.path]
+    destination_groups = [data.nsxt_policy_group.group_tag.path]
+    action             = "ALLOW"
+    services           = [data.nsxt_policy_service.service.path]
+    logged             = true
+  }
+
+
+}
+
+
 resource "nsxt_policy_group" "group1" {
   display_name = "tf-group1"
   description  = "Terraform provisioned Group"
