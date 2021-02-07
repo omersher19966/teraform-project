@@ -95,7 +95,7 @@ resource "nsxt_policy_security_policy" "policy1" {
 
 
   rule {
-    for name in var.list-test: display_name = name.name[1]
+    display_name       = "Rule-1"
     source_groups      = [data.nsxt_policy_group.group_all.path]
     destination_groups = [data.nsxt_policy_group.group_tag.path]
     action             = "ALLOW"
